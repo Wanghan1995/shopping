@@ -10,7 +10,7 @@ public class Shopping{
 		return null;
 	}
 
-	public void sava(Goods good){
+	public void save(Goods good){
 		if (index>=goods.length){
 			Goods[] demo=new Goods[goods.length+5];
 			System.arraycopy(goods,0,demo,0,index);
@@ -58,6 +58,11 @@ public class Shopping{
 			switch(option){
 				case "1":
 					System.out.println("以下是商品信息");
+					Goods[] goods=shop.find();
+					for (Goods good:goods){
+						System.out.println(good);
+					}
+					System.out.println("总共查询到"+shop.index+"个商品信息");
 					break;
 				case "2":
 					while(true){
@@ -66,6 +71,16 @@ public class Shopping{
 						if(inStr.equals("break")){
 							break;
 						}
+						String[] commodity=inStr.split("#");
+						String name=commodity[0];
+						double price=Double.parseDouble(commodity[1]);
+						String made = commodity[2];
+						String date=commodity[3];
+						int amount=Integer.parseInt(commodity[4]);
+						String size=commodity[5];
+						Goods good=new Goods(name,price,made,date,amount,size);
+						shop.save(good);
+						System.out.println("保存成功");
 				}					
 					break;
 				case "3":
