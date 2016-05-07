@@ -7,7 +7,9 @@ public class Shopping{
 	private int index;
 
 	public Goods[] find(){
-		return null;
+		Goods[] demo=new Goods[index];
+		System.arraycopy(goods,0,demo,0,index);
+		return demo;
 	}
 
 	public void save(Goods good){
@@ -19,23 +21,64 @@ public class Shopping{
 		goods[index++]=good;
 		
 	}
-
-	public String[] findAmount(){
-		return null;
+	public Goods findByName(String name,String size){
+		int num=getindexByName(name,size);
+		return num==-1?null:goods[num];
+	}
+	public int findAmount(String name,String size){
+		int num=getindexByName(name,size);
+		return num==-1?-1:goods[num].getAmount();
 	}
 
-	public void deleteByName(){
-	
+	public void deleteByName(String name,String size){
+		int num=getindexByName(name,size);
+		for(int i=num;i<index-1;i++){
+			goods[i]=goods[i+1];
+		}
+		goods[--index]=null;
 	}
 	
-	public void update(){
-	
+	public void update(Goods good){
+		for (int i=0;i<index ;i++ ){
+			if(goods[i].getName().equals(good.getName())){
+				if(goods[i].getSize().equals(good.getSize())){
+					goods[i].setPrice(good.getPrice());
+					goods[i].setMade(good.getMade());
+					goods[i].setDate(good.getDate());
+					goods[i].setAmount(good.getAmount());
+		
+				}
+			}
+		}	
 	}
 
-	public void buy(){
+	public Goods Buy(String name,String size){
+		int num=getindexByName(name,size);
+		return goods[num];
 	
 	}
-
+	public int getindexByName(String name,String size){
+		int num=-1;
+		for (int i=0;i<index ;i++ ){
+			if(goods[i].getName().equals(name)){
+				if(goods[i].getSize().equals(size)){
+					num=i;
+					break;
+				}
+			}
+		}
+		return num;
+	}
+	public int getindexByName(String name){
+		int num=-1;
+		for(int i=0;i<index;i++){
+			if(goods[i].getName().equals(name)){
+				num=i;
+				break;
+			}
+		}
+		return num;
+	}
 	public void menu(){
 		System.out.println("&&&&&&&&&&&购物管理系统&&&&&&&&&&&");
 		System.out.println("1) 查询商品基本信息");
@@ -85,29 +128,72 @@ public class Shopping{
 					break;
 				case "3":
 					while(true){
-						System.out.println("请输入查询剩余数量的商品name或输入break返回上一级目录");
+						System.out.println("请输入查询剩余数量的商品【name#size】或输入break返回上一级目录");
 						String inStr=sc.nextLine();
 						if(inStr.equals("break")){
 							break;
 						}
+						String[] NS=inStr.split("#");
+						String name =NS[0];
+						String size =NS[1];
+						int num=shop.findAmount(name,size);
+						System.out.println(num==-1?"对不起，未查询到您要的商品的剩余数量":"您要查询的商品的剩余数量为："+num);
 				}					
 					break;
 				case "4":
 					while(true){
-						System.out.println("请输入删除商品的name或输入break返回上一级目录");
+						System.out.println("请输入删除商品的【name#size】或输入break返回上一级目录");
 						String inStr=sc.nextLine();
 						if(inStr.equals("break")){
 							break;
+						}
+						String[] In=inStr.split("#");
+						String name =In[0];
+						String size =In[1];
+						Goods good=shop.findByName(name,size);
+						if (good==null){
+							System.out.println("对不起，您所查询的商品不存在");
+							continue;
+						}else{
+							System.out.println("您要删除的商品信息为"+good+"\n确定请输入Yes\n");
+							String op = sc.nextLine();
+							if(op.equals("Yes")){
+								shop.deleteByName(name,size);
+								System.out.println("删除成功！");
+							}else{
+								System.out.println("删除失败！！！");
+
+							}
 						}
 				}				
 					break;
 				case "5":
 					while(true){
-						System.out.println("请输入更新商品的name或输入break返回上一级目录");
+						System.out.println("请输入更新商品的【name#size】或输入break返回上一级目录");
 						String inStr=sc.nextLine();
 						if(inStr.equals("break")){
 							break;
 						}
+						String[] In=inStr.split("#");
+						String name =In[0];
+						String size =In[1];
+						Goods good=shop.findByName(name,size);
+						if(good ==null){
+							System.out.println("您要更新的商品信息不存在");
+							break;
+						}
+						System.out.println("您要更新的商品信息为："+good);
+						System.out.println("输入新信息【price#made#date#amount】");
+						String str=sc.nextLine();
+						String[] goodArr=str.split("#");
+						double price=Double.parseDouble(goodArr[0]);
+						String made =goodArr[1];
+						String date =goodArr[2];
+						int amount=Integer.parseInt(goodArr[3]);
+						Goods newgood=new Goods(name,price,made,date,amount,size);
+						shop.update(newgood);
+						System.out.println("修改成功");
+						
 				}					
 					break;
 				case "6":
@@ -117,6 +203,24 @@ public class Shopping{
 						if(inStr.equals("break")){
 							break;
 						}
+						String[] In=inStr.split("#");
+						String name =In[0];
+						String size =In[1];
+						Goods Buy=shop.findByName(name,size);
+						if(Buy ==null){
+							System.out.println("您要购买的商品信息不存在");
+							break;
+						}
+						
+						System.out.println("购买的商品为"+Buy+"\n确认请输入Yes");
+						String op = sc.nextLine();
+							if(op.equals("Yes")){
+								shop.Buy(name,size);
+								System.out.println("购买成功！");
+							}else{
+								System.out.println("购买失败！！！");
+							}
+						
 				}					
 					break;
 				case "help":
